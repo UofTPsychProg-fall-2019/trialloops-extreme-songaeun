@@ -5,7 +5,7 @@
 # 4. Show a stream of natual scene images (1sec/img). Participants should press spacebar when an image rotated on its side.
 # 5. Show feedback (500ms).
 # ** total 10 trials and 3 target trials (rotated images) in this version.
-# ** final output would be printed in the Output window (including accuracy & mean RT accumulated in the trial).
+# ** final output would be printed in the Output window (including accuracy by the current trial).
 
 # required set up
 import numpy as np
@@ -25,7 +25,6 @@ sbjID = subgui.data[0]
 sessNum = subgui.data[1]
 
 # set output frame
-outFileName = 'data' + os.sep + 'sub' + sbjID + '_sess' + sessNum + '.csv'
 outVars = ['sbj', 'trial', 'stim', 'resp', 'rt', 'stimOn', 'accuracy_soFar']
 out = pd.DataFrame(columns=outVars)
 
@@ -67,7 +66,7 @@ fbClock = core.Clock() # will reset when feeback presented
 nTrials = len(trialInfo)
 correct = [] # for trial-by-trial accuracy
 rt = []
-for currTrial in np.arange(0,nTrials):
+for currTrial in np.arange(0, nTrials):
     
     trialClock.reset()
     
@@ -83,7 +82,7 @@ for currTrial in np.arange(0,nTrials):
     # scene image drawing (while iti)
     currImg = visual.ImageStim(win, image=trialInfo.loc[currTrial,'stim'],
                               ori = oris[trialInfo.loc[currTrial,'target']],
-                              size= [0.5, 0.5], pos=(0,0), interpolate=True)
+                              size= (0.5, 0.5), pos=(0,0), interpolate=True)
     currImg.draw()
     
     # end iti and show the current image
@@ -93,7 +92,7 @@ for currTrial in np.arange(0,nTrials):
     stimClock.reset()
     out.loc[currTrial, 'stimOn'] = expClock.getTime()
     
-    # record response while the image presented
+    # record response while the current image presented
     event.clearEvents()
     while stimClock.getTime() < stimDur:
         Clock = stimClock.getTime()
@@ -120,8 +119,8 @@ for currTrial in np.arange(0,nTrials):
             correct.append(0)
             rt.append(Clock)
             fbWrong.draw()
-    win.flip()
     # feedback disply
+    win.flip()
     fbClock.reset()
     core.wait(fbDur)
     out.loc[currTrial, 'accuracy_soFar'] = np.mean(correct)
